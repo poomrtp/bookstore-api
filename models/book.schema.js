@@ -8,11 +8,17 @@ let bookSchema = new Schema({
   name: {
     type: String
   },
+  nameEN: {
+    type: String
+  },
   author: {
     type: [String]
   },
   illustrator: {
     type: [String]
+  },
+  description: {
+    type: String
   },
   publisher: {
     type: String

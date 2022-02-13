@@ -12,9 +12,9 @@ const getBooks = async (req, res) => {
 }
 
 const getBookById = async (req, res) => {
-  const { id: _id } = req.params
+  const { name: name } = req.params
   try {
-    const doc = await Book.findOne({ _id: _id })
+    const doc = await Book.findOne({ name: name })
     res.json(doc)
   } catch (error) {
     res.status(404).json({ ...error })
@@ -32,13 +32,11 @@ const createBook = async (req, res) => {
 }
 
 const updateBook = async (req, res) => {
-  const { id: _id } = req.params
+  const { name: name } = req.params
   const payload = req.body
 
   try {
-    // const doc = await Book.findByIdAndUpdate(_id, { ...payload, _id }, { new: true })
-    // res.json(doc)
-    const doc = await Book.findOne({ _id: _id })
+    const doc = await Book.findOne({ name: name })
     doc.set({ ...payload }).save()
     res.json(doc)
   } catch (error) {
@@ -47,11 +45,11 @@ const updateBook = async (req, res) => {
 }
 
 const deleteBook = async (req, res) => {
-  const { id: _id } = req.params
+  const { name: name } = req.params
   const payload = req.body
 
   try {
-    const doc = await Book.findOne({ _id: _id })
+    const doc = await Book.findOne({ name: name })
     doc.set({ status: "inactive" }).save()
     res.json(doc)
   } catch (error) {
