@@ -40,7 +40,7 @@ const updateBook = async (req, res) => {
     doc.set({ ...payload }).save()
     res.json(doc)
   } catch (error) {
-    res.status(404).json({ ...error })
+    res.status(404).json({ error })
   }
 }
 

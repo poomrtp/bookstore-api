@@ -16,7 +16,7 @@ app.use(bodyParser.urlencoded({
 }))
 app.use(cors());
 
-app.use('/api', bookAPI)
+app.use('/api/products', bookAPI)
 
 const PORT = process.env.PORT || 3000;
 
