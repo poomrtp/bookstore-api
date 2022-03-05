@@ -35,8 +35,8 @@ let bookSchema = new Schema({
   weight: {
     type: Number
   },
-  image: {
-    type: String
+  images: {
+    type: [String]
   },
   status: {
     type: String,
