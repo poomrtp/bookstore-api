@@ -32,6 +32,9 @@ let bookSchema = new Schema({
   price: {
     type: Number
   },
+  digitalPrice: {
+    type: Number
+  },
   weight: {
     type: Number
   },
