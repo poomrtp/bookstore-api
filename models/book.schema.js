@@ -26,6 +26,9 @@ let bookSchema = new Schema({
   genres: {
     type: [String]
   },
+  category: {
+    type: String
+  },
   publishedAt: {
     type: Date
   },
@@ -35,11 +38,21 @@ let bookSchema = new Schema({
   digitalPrice: {
     type: Number
   },
+  types: [
+    {
+      name: String,
+      nameTH: String,
+      price: Number
+    }
+  ],
   weight: {
     type: Number
   },
   images: {
     type: [String]
+  },
+  quantity: {
+    type: Number
   },
   status: {
     type: String,

@@ -11,7 +11,8 @@ const getBooks = async (req, res) => {
   }
 }
 
-const getBookById = async (req, res) => {
+const getBookByName = async (req, res) => {
+  console.log('req.params', req.params)
   const { name: name } = req.params
   try {
     const doc = await Book.findOne({ name: name })
@@ -59,7 +60,7 @@ const deleteBook = async (req, res) => {
 
 module.exports = {
   getBooks,
-  getBookById,
+  getBookByName,
   createBook,
   updateBook,
   deleteBook
