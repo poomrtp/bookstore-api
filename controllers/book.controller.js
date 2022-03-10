@@ -12,7 +12,7 @@ const getBooks = async (req, res) => {
 }
 
 const getBookByName = async (req, res) => {
-  console.log('req.params', req.params)
+  // console.log('req.params', req.params)
   const { name: name } = req.params
   try {
     const doc = await Book.findOne({ name: name })
