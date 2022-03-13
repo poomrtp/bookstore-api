@@ -28,10 +28,29 @@ const calculateGrandTotal = (cart) => {
   }, { quantity: 0, totalPrice: 0 })
 }
 
-const calculateGrandTotalPrice = (cart) => {
-  return cart.reduce((prev, curr) => {
-    return prev.totalPrice + curr.totalPrice
-  }, 0)
+const groupItemByPublisher = (cartItems) => {
+  const itemGroup = []
+  cartItems.reduce((prev, curr) => {
+    if(curr.type.name === 'e-book') {
+      if(!prev[curr.type.name]) {
+        prev[curr.type.name] = { seller: 'e-book', items: [], totalPrice: 0, quantity: 0 }
+        itemGroup.push(prev[curr.type.name])
+      }
+      prev[curr.type.name].items.push(curr)
+      prev[curr.type.name].totalPrice += curr.totalPrice
+      prev[curr.type.name].quantity += curr.quantity
+      return prev
+    }
+    if(!prev[curr.publisher]) {
+      prev[curr.publisher] = { seller: curr.publisher, items: [], totalPrice: 0, quantity: 0 }
+      itemGroup.push(prev[curr.publisher])
+    }
+    prev[curr.publisher].items.push(curr)
+    prev[curr.publisher].totalPrice += curr.totalPrice
+    prev[curr.publisher].quantity += curr.quantity
+    return prev
+}, {})
+  return itemGroup
 }
 
 
@@ -40,7 +59,24 @@ exports.findCart = async (req, res) => {
     const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
     res.json(doc)
   } catch (error) {
-    res.status(404).json({ ...error })
+    res.status(404).json(error)
+  }
+}
+
+exports.findFinalCart = async (req, res) => {
+  try {
+    const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+    const groupItem = groupItemByPublisher(doc.cartItems)
+    const grandTotal = calculateGrandTotal(groupItem)
+    const response = {
+      orders: groupItem,
+      totalPrice: grandTotal.totalPrice,
+      totalItem: grandTotal.quantity
+    }
+    // console.log(result, result)
+    res.json(response)
+  } catch (error) {
+    res.status(404).json(error)
   }
 }
 
