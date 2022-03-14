@@ -49,8 +49,12 @@ const groupItemByPublisher = (cartItems) => {
     prev[curr.publisher].totalPrice += curr.totalPrice
     prev[curr.publisher].quantity += curr.quantity
     return prev
-}, {})
+  }, {})
   return itemGroup
+}
+
+const updateStock = (orders, products) => {
+
 }
 
 
@@ -73,7 +77,6 @@ exports.findFinalCart = async (req, res) => {
       totalPrice: grandTotal.totalPrice,
       totalItem: grandTotal.quantity
     }
-    // console.log(result, result)
     res.json(response)
   } catch (error) {
     res.status(404).json(error)
@@ -206,6 +209,18 @@ exports.removeItem = async (req, res) => {
     console.log('error', error)
     res.status(404).json(error)
   }
+}
+
+exports.createOrder = async (req, res) => {
+  // try {
+  //   const payload = req.body
+  //   // const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+  //   // const products = await Book.find({ status: "active", })
+  //   res.json(payload)
+  // } catch (error) {
+  //   console.log('error', error)
+  //   res.status(404).json(error)
+  // }
 }
 
 
