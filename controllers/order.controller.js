@@ -19,6 +19,24 @@ const splitEbook = (cart) => {
   return cart.orders.filter(item => item.seller !== 'e-book')
 }
 
+exports.getOrders = async (req, res) => {
+  try {
+    const orderDoc = await Order.find()
+    res.json(orderDoc)
+  } catch (error) {
+    res.status(404).json({ ...error })
+  }
+}
+
+exports.getOrderByUser = async (req, res) => {
+  try {
+    const orderDoc = await Order.findOne({ "createdBy.name": req.headers.authorization, paymentStatus: 'pending' })
+    res.json(orderDoc)
+  } catch (error) {
+    res.status(404).json({ ...error })
+  }
+}
+
 exports.createOrder = async (req, res) => {
   try {
     const payload = {
@@ -28,9 +46,9 @@ exports.createOrder = async (req, res) => {
     }
     const doc = new Order(payload)
     await doc.save()
-    res.json(doc)
+    return res.json(doc)
   } catch (error) {
-    res.status(400).json(error)
+    return res.status(400).json(error)
   }
 }
 
@@ -56,7 +74,7 @@ exports.checkoutOrder = async (req, res) => {
       return res.status(400).json(errorData)
     }
     const orderResult = await orderDoc.set({ paymentStatus: 'paid' }).save()
-    await deleteBook(req)
+    await deleteCart(req)
     const deleteResult = await Cart.deleteOne({ "createdBy.name": req.headers.authorization })
     if(deleteResult) console.log('delete success')
     return res.json(orderResult)
@@ -65,7 +83,8 @@ exports.checkoutOrder = async (req, res) => {
     res.status(400).json(error)
   }
 }
-const deleteBook = async (req, res) => {
+
+const deleteCart = async (req, res) => {
   const payload = req.body
   try {
     const doc = await cart.deleteOne({ "createdBy.name": req.headers.authorization })

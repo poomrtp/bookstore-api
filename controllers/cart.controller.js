@@ -33,7 +33,7 @@ const groupItemByPublisher = (cartItems) => {
   cartItems.reduce((prev, curr) => {
     if(curr.type.name === 'e-book') {
       if(!prev[curr.type.name]) {
-        prev[curr.type.name] = { seller: 'e-book', items: [], totalPrice: 0, quantity: 0 }
+        prev[curr.type.name] = { seller: 'e-book', items: [], description: '', totalPrice: 0, quantity: 0 }
         itemGroup.push(prev[curr.type.name])
       }
       prev[curr.type.name].items.push(curr)
@@ -42,7 +42,7 @@ const groupItemByPublisher = (cartItems) => {
       return prev
     }
     if(!prev[curr.publisher]) {
-      prev[curr.publisher] = { seller: curr.publisher, items: [], totalPrice: 0, quantity: 0 }
+      prev[curr.publisher] = { seller: curr.publisher, items: [], description: '', totalPrice: 0, quantity: 0 }
       itemGroup.push(prev[curr.publisher])
     }
     prev[curr.publisher].items.push(curr)

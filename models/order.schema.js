@@ -13,6 +13,18 @@ const typeSchema = new Schema({
   },
 })
 
+const shipmentSchema = new Schema({
+  name: {
+    type: String
+  },
+  nameTH: {
+    type: String
+  },
+  price: {
+    type: Number
+  },
+})
+
 const itemSchema = new Schema({
   id: {
     type: Number
@@ -65,6 +77,14 @@ const order = new Schema({
   },
   items: {
     type: [itemSchema]
+  },
+  description: {
+    type: String,
+    default: ''
+  },
+  shipment: {
+    type: shipmentSchema,
+    default: null
   },
   totalPrice: {
     type: Number
