@@ -38,6 +38,10 @@ exports.getOrderByUser = async (req, res) => {
 }
 
 exports.createOrder = async (req, res) => {
+  const orderDoc = await Order.findOne({ "createdBy.name": req.headers.authorization, paymentStatus: 'pending' })
+  if (orderDoc) {
+    await orderDoc.set({ paymentStatus: 'canceled' }).save()
+  }
   try {
     const payload = {
       ...req.body,
