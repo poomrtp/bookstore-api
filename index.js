@@ -10,6 +10,7 @@ dotenv.config();
 const bookAPI = require('./routes/book.route')
 const cartAPI = require('./routes/cart.route')
 const orderAPI = require('./routes/order.route')
+const userAPI = require('./routes/user.route')
 
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
@@ -20,6 +21,7 @@ app.use(cors());
 app.use('/api/products', bookAPI)
 app.use('/api/carts', cartAPI)
 app.use('/api/orders', orderAPI)
+app.use('/api/user', userAPI)
 
 const PORT = process.env.PORT || 3000;
 
