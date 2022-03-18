@@ -2,10 +2,10 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const userSchema = new Schema({
-  fullName: {
+  fullname: {
     type: String
   },
-  userName: {
+  username: {
     type: String
   },
   email: {
@@ -16,11 +16,11 @@ const userSchema = new Schema({
   },
   createdAt: {
     type: Date,
-    default: null
+    default: Date.now
   },
   updatedAt: {
     type: Date,
-    default: null
+    default: Date.now
   }
 })
 

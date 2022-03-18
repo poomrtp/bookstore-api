@@ -3,6 +3,7 @@ let mongoose = require('mongoose')
 let bodyParser = require('body-parser')
 let cors = require('cors')
 let dotenv = require('dotenv')
+const cookieParser = require('cookie-parser')
 
 const app = express();
 dotenv.config();
@@ -17,6 +18,7 @@ app.use(bodyParser.urlencoded({
   extended: false
 }))
 app.use(cors());
+app.use(cookieParser())
 
 app.use('/api/products', bookAPI)
 app.use('/api/carts', cartAPI)

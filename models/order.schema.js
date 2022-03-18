@@ -120,6 +120,14 @@ const orderSchema = new Schema({
       name: String
     },
     default: {}
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
+    type: Date,
+    default: Date.now
   }
 })
 
