@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const jwtDecode = require('jwt-decode')
 
 const Cart = require('../models/cart.schema')
 const Book = require('../models/book.schema')
@@ -11,6 +12,13 @@ const checkProductQuantity = (cart, product) => {
     throw new Error("cart.quantity > product.quantity")
   }
   return
+}
+const decodeToken = (token) => {
+  try {
+    return jwtDecode(token)
+  } catch {
+    return ''
+  }
 }
 
 const findProductByName = (cart, productData) => {
@@ -59,8 +67,12 @@ const updateStock = (orders, products) => {
 
 
 exports.findCart = async (req, res) => {
+  const { username } = decodeToken(req.headers.authorization)
+  if (!username) {
+    return res.json({ message: 'please login' })
+  }
   try {
-    const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+    const doc = await Cart.findOne({ "createdBy.name": username })
     res.json(doc)
   } catch (error) {
     res.status(404).json(error)
@@ -68,8 +80,12 @@ exports.findCart = async (req, res) => {
 }
 
 exports.findFinalCart = async (req, res) => {
+  const { username } = decodeToken(req.headers.authorization)
+  if (!username) {
+    return res.json({ message: 'please login' })
+  }
   try {
-    const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+    const doc = await Cart.findOne({ "createdBy.name": username })
     const groupItem = groupItemByPublisher(doc.cartItems)
     const grandTotal = calculateGrandTotal(groupItem)
     const response = {
@@ -84,9 +100,13 @@ exports.findFinalCart = async (req, res) => {
 }
 
 exports.addToCart = async (req, res) => {
+  const { username } = decodeToken(req.headers.authorization)
+  if (!username) {
+    return res.json({ message: 'please login' })
+  }
   try {
     const { name, quantity } = req.body
-    const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+    const doc = await Cart.findOne({ "createdBy.name": username })
     const product = await Book.findOne({ name: name })
 
     if (doc) {
@@ -112,8 +132,8 @@ exports.addToCart = async (req, res) => {
         cartItems: cartItems,
         totalPrice: grandTotal.totalPrice,
         totalItem: grandTotal.quantity,
-        createdBy: { name: req.headers.authorization },
-        updatedBy: { name: req.headers.authorization }
+        createdBy: { name: username },
+        updatedBy: { name: username }
       }
       await doc.set({ ...payload }).save()
       res.json(doc)
@@ -123,10 +143,10 @@ exports.addToCart = async (req, res) => {
         cartItems: { ...req.body, totalPrice: req.body.type.price * req.body.quantity },
         totalPrice: req.body.type.price * req.body.quantity,
         totalItem: req.body.quantity,
-        createdBy: { name: req.headers.authorization },
-        updatedBy: { name: req.headers.authorization }
+        createdBy: { name: username },
+        updatedBy: { name: username }
       }
-      console.log('AUTH', req.headers.authorization)
+      console.log('AUTH', username)
       const cartDoc = new Cart(payload)
       await cartDoc.save()
       res.json(cartDoc)
@@ -138,9 +158,13 @@ exports.addToCart = async (req, res) => {
 }
 
 exports.editCart = async (req, res) => {
+  const { username } = decodeToken(req.headers.authorization)
+  if (!username) {
+    return res.json({ message: 'please login' })
+  }
   try {
     const { name, quantity } = req.body
-    const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+    const doc = await Cart.findOne({ "createdBy.name": username })
     const product = await Book.findOne({ name: name })
 
     if (doc) {
@@ -165,8 +189,8 @@ exports.editCart = async (req, res) => {
         cartItems: cartItems,
         totalPrice: req.body.type.price * newQuantity,
         totalItem: newQuantity,
-        createdBy: { name: req.headers.authorization },
-        updatedBy: { name: req.headers.authorization }
+        createdBy: { name: username },
+        updatedBy: { name: username }
       }
       await doc.set({ ...payload }).save()
       res.json(doc)
@@ -178,9 +202,13 @@ exports.editCart = async (req, res) => {
 }
 
 exports.removeItem = async (req, res) => {
+  const { username } = decodeToken(req.headers.authorization)
+  if (!username) {
+    return res.json({ message: 'please login' })
+  }
   try {
     const { name, quantity } = req.body
-    const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
+    const doc = await Cart.findOne({ "createdBy.name": username })
     const product = await Book.findOne({ name: name })
 
     if (doc) {
@@ -199,8 +227,8 @@ exports.removeItem = async (req, res) => {
         cartItems: cartItems,
         totalPrice: grandTotal.totalPrice,
         totalItem: grandTotal.quantity,
-        createdBy: { name: req.headers.authorization },
-        updatedBy: { name: req.headers.authorization }
+        createdBy: { name: username },
+        updatedBy: { name: username }
       }
       await doc.set({ ...payload }).save()
       res.json(doc)

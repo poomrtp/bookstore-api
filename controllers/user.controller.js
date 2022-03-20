@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
+const jwtDecode = require('jwt-decode')
 // const cookieParser = require('cookie-parser')
 
 const User = require('../models/user.schema')
@@ -52,8 +53,12 @@ exports.logout = async (req, res) => {
 
 exports.getUser = async (req, res) => {
   const cookie = req.body
+  const auth = req.headers.authorization
+  const { username } = jwtDecode(auth)
+  console.log('auth', username)
+  console.log('cookie', cookie)
   try {
-    const userDoc = await User.findOne({ username: cookie.username })
+    const userDoc = await User.findOne({ username: username })
     const result = {
       username: userDoc.username,
       fullname: userDoc.fullname,
