@@ -4,8 +4,13 @@ const jwtDecode = require('jwt-decode')
 const Book = require('../models/book.schema')
 
 const getBooks = async (req, res) => {
+  const search = req.query.search || ''
   try {
-    const doc = await Book.find({ status: "active" })
+    const doc = await Book.find({ status: "active", $or: [ 
+      { name: { $regex: search, $options: 'i' } },
+      { nameEN: { $regex: search, $options: 'i' } },
+      { publisher: { $regex: search, $options: 'i' } }
+    ]})
     res.json(doc)
   } catch (error) {
     res.status(404).json({ ...error })

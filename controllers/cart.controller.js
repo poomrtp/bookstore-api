@@ -217,7 +217,6 @@ exports.removeItem = async (req, res) => {
       let cartItems = [...doc.cartItems]
       if (index !== -1) {
         cartItems.splice(index, 1)
-        console.log('removeItem', cartItems)
       } else {
         res.status(404).json({ error: 'item not found' })
       }

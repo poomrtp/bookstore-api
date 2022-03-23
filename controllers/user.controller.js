@@ -13,7 +13,7 @@ exports.createUser = async (req, res) => {
   try {
     const doc = new User(req.body)
     await doc.save()
-    return res.json(doc)
+    return res.json({ message: 'Create Account Success' })
   } catch (error) {
     return res.status(400).json(error)
   }
@@ -30,10 +30,10 @@ exports.login = async (req, res) => {
   }
   try {
     const token = jwt.sign({ _id: userDoc._id, username: userDoc.username }, "bookstoreSecret")
-    res.cookie('jwt', token, {
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000
-    })
+    // res.cookie('jwt', token, {
+    //   httpOnly: true,
+    //   maxAge: 24 * 60 * 60 * 1000
+    // })
     return res.send(token)
   } catch (error) {
     return res.status(400).json({ errors: error })
@@ -52,11 +52,8 @@ exports.logout = async (req, res) => {
 }
 
 exports.getUser = async (req, res) => {
-  const cookie = req.body
   const auth = req.headers.authorization
   const { username } = jwtDecode(auth)
-  console.log('auth', username)
-  console.log('cookie', cookie)
   try {
     const userDoc = await User.findOne({ username: username })
     const result = {
@@ -70,27 +67,5 @@ exports.getUser = async (req, res) => {
   }
 }
 
-// exports.getUser = async (req, res) => {
-//   const cookie = req.cookies
-//   console.log(cookie)
-//   // const claims = jwt.verify(cookie, 'bookstoreSecret')
-//   // if (!claims) {
-//   //   return res.status(400).json({ message: 'unauthenticated' })
-//   // }
-//   try {
-//     // const userDoc = await User.findOne({ username: claims.username })
-//     const userDoc = await User.findOne({ username: cookie.username })
-//     const result = {
-//       username: userDoc.username,
-//       fullname: userDoc.fullname,
-//       email: userDoc.email
-//     }
-//     return res.json(result)
-//   } catch (error) {
-//     return res.status(400).json({ message: 'username not exists' })
-//   }
-
-//   return res.send(token)
-// }
 
   
