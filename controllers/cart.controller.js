@@ -35,6 +35,13 @@ const calculateGrandTotal = (cart) => {
     return prev
   }, { quantity: 0, totalPrice: 0 })
 }
+const calculateTotal = (cart) => {
+  return cart.reduce((prev, curr) => {
+    prev.totalItem += curr.totalItem
+    prev.totalPrice += curr.totalPrice
+    return prev
+  }, { totalItem: 0, totalPrice: 0 })
+}
 
 const groupItemByPublisher = (cartItems) => {
   const itemGroup = []
@@ -105,10 +112,9 @@ exports.addToCart = async (req, res) => {
     return res.json({ message: 'please login' })
   }
   try {
-    const { name, quantity } = req.body
-    const doc = await Cart.findOne({ "createdBy.name": username })
+    const { name, quantity, type } = req.body
+    const doc = await Cart.findOne({ "createdBy.name": username, "type.name": type.name })
     const product = await Book.findOne({ name: name })
-
     if (doc) {
       const index = findProductByName(doc, req.body)
       const newQuantity = doc.cartItems[index]?.quantity ? doc.cartItems[index]?.quantity + quantity : quantity
@@ -185,10 +191,11 @@ exports.editCart = async (req, res) => {
         }
       }
       // console.log(doc)
+      const grandTotal = calculateGrandTotal(cartItems)
       const payload = {
         cartItems: cartItems,
-        totalPrice: req.body.type.price * newQuantity,
-        totalItem: newQuantity,
+        totalPrice: grandTotal.totalPrice,
+        totalItem: grandTotal.quantity,
         createdBy: { name: username },
         updatedBy: { name: username }
       }
