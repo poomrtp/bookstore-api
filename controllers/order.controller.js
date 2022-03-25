@@ -5,18 +5,6 @@ const Cart = require('../models/cart.schema')
 const Book = require('../models/book.schema')
 const Order = require('../models/order.schema')
 
-const checkProductQuantity = (cart, product) => {
-  const nonEbookItems = cart.orders.filter(item => item.seller !== 'e-book')
-  nonEbookItems.forEach(item => {
-    if (item.quantity > product.quantity) {
-      console.log('error -> quantity')
-      throw new Error("cart.quantity > product.quantity")
-    }
-    return
-  })
-  return nonEbookItems
-}
-
 const decodeToken = (token) => {
   try {
     return jwtDecode(token)
@@ -100,23 +88,12 @@ exports.checkoutOrder = async (req, res) => {
       return res.status(400).json(errorData)
     }
     const orderResult = await orderDoc.set({ paymentStatus: 'paid' }).save()
-    await deleteCart(req)
     const deleteResult = await Cart.deleteOne({ "createdBy.name": username })
-    if(deleteResult) console.log('delete success')
+    if(deleteResult) console.log('delete cart success')
     return res.json(orderResult)
   } catch (error) {
     console.log(error)
     res.status(400).json(error)
-  }
-}
-
-const deleteCart = async (req, res) => {
-  const { username } = decodeToken(req.headers.authorization)
-  const payload = req.body
-  try {
-    const doc = await Cart.deleteOne({ "createdBy.name": username })
-  } catch (error) {
-    res.status(404).json({ errors: error })
   }
 }
 
