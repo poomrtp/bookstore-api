@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const jwtDecode = require('jwt-decode')
 // const cookieParser = require('cookie-parser')
@@ -11,7 +12,15 @@ exports.createUser = async (req, res) => {
     return res.status(400).json({ message: 'user already exists' })
   }
   try {
-    const doc = new User(req.body)
+    const salt = await bcrypt.genSalt(10)
+    const hashedPassword = await bcrypt.hash(req.body.password, salt)
+    const userData = {
+      fullname: req.body.fullname,
+      username: req.body.username,
+      email: req.body.email,
+      password: hashedPassword,
+    }
+    const doc = new User(userData)
     await doc.save()
     return res.json({ message: 'Create Account Success' })
   } catch (error) {
@@ -25,7 +34,10 @@ exports.login = async (req, res) => {
   if (!userDoc) {
     return res.status(404).json({ message: 'user not found' })
   }
-  if (userDoc.password !== password) {
+  // if (userDoc.password !== password) {
+  //   return res.status(404).json({ message: 'username or password invalid' })
+  // }
+  if (!await bcrypt.compare(password, userDoc.password)) {
     return res.status(404).json({ message: 'username or password invalid' })
   }
   try {
