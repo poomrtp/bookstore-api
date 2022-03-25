@@ -8,10 +8,11 @@ const cookieParser = require('cookie-parser')
 const app = express();
 dotenv.config();
 
-app.use('*', cors({
-  origin: '*',
-  methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-}));
+// app.use('*', cors({
+//   origin: '',
+//   methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+// }));
+app.use(cors());
 const bookAPI = require('./routes/book.route')
 const cartAPI = require('./routes/cart.route')
 const orderAPI = require('./routes/order.route')
