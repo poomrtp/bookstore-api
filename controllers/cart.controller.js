@@ -4,15 +4,6 @@ const jwtDecode = require('jwt-decode')
 const Cart = require('../models/cart.schema')
 const Book = require('../models/book.schema')
 
-
-const checkProductQuantity = (cart, product) => {
-  if (cart.type.name === 'e-book') return
-  if (cart.quantity > product.quantity) {
-    console.log('error -> quantity')
-    throw new Error("cart.quantity > product.quantity")
-  }
-  return
-}
 const decodeToken = (token) => {
   try {
     return jwtDecode(token)
@@ -34,13 +25,6 @@ const calculateGrandTotal = (cart) => {
     prev.totalPrice += curr.totalPrice
     return prev
   }, { quantity: 0, totalPrice: 0 })
-}
-const calculateTotal = (cart) => {
-  return cart.reduce((prev, curr) => {
-    prev.totalItem += curr.totalItem
-    prev.totalPrice += curr.totalPrice
-    return prev
-  }, { totalItem: 0, totalPrice: 0 })
 }
 
 const groupItemByPublisher = (cartItems) => {
@@ -67,11 +51,6 @@ const groupItemByPublisher = (cartItems) => {
   }, {})
   return itemGroup
 }
-
-const updateStock = (orders, products) => {
-
-}
-
 
 exports.findCart = async (req, res) => {
   const { username } = decodeToken(req.headers.authorization)
@@ -114,7 +93,10 @@ exports.addToCart = async (req, res) => {
   try {
     const { name, quantity, type } = req.body
     const doc = await Cart.findOne({ "createdBy.name": username, "type.name": type.name })
-    const product = await Book.findOne({ name: name })
+    const product = await Book.findOne({ status: 'active', name: name, quantity: { $gte: quantity } })
+    if (!product) {
+      return res.json({ message: 'out of stock' })
+    }
     if (doc) {
       const index = findProductByName(doc, req.body)
       const newQuantity = doc.cartItems[index]?.quantity ? doc.cartItems[index]?.quantity + quantity : quantity
@@ -133,7 +115,6 @@ exports.addToCart = async (req, res) => {
         }
       }
       const grandTotal = calculateGrandTotal(cartItems)
-      console.log(grandTotal.totalPrice, grandTotal.quantity)
       const payload = {
         cartItems: cartItems,
         totalPrice: grandTotal.totalPrice,
@@ -144,7 +125,6 @@ exports.addToCart = async (req, res) => {
       await doc.set({ ...payload }).save()
       res.json(doc)
     } else {
-      checkProductQuantity(req.body, product)
       const payload = {
         cartItems: { ...req.body, totalPrice: req.body.type.price * req.body.quantity },
         totalPrice: req.body.type.price * req.body.quantity,
@@ -152,7 +132,6 @@ exports.addToCart = async (req, res) => {
         createdBy: { name: username },
         updatedBy: { name: username }
       }
-      console.log('AUTH', username)
       const cartDoc = new Cart(payload)
       await cartDoc.save()
       res.json(cartDoc)
@@ -190,7 +169,6 @@ exports.editCart = async (req, res) => {
           totalPrice: req.body.type.price * newQuantity
         }
       }
-      // console.log(doc)
       const grandTotal = calculateGrandTotal(cartItems)
       const payload = {
         cartItems: cartItems,
@@ -227,7 +205,6 @@ exports.removeItem = async (req, res) => {
       } else {
         res.status(404).json({ error: 'item not found' })
       }
-      // console.log(doc)
       const grandTotal = calculateGrandTotal(cartItems)
       const payload = {
         cartItems: cartItems,
@@ -245,17 +222,6 @@ exports.removeItem = async (req, res) => {
   }
 }
 
-exports.createOrder = async (req, res) => {
-  // try {
-  //   const payload = req.body
-  //   // const doc = await Cart.findOne({ "createdBy.name": req.headers.authorization })
-  //   // const products = await Book.find({ status: "active", })
-  //   res.json(payload)
-  // } catch (error) {
-  //   console.log('error', error)
-  //   res.status(404).json(error)
-  // }
-}
 
 
   

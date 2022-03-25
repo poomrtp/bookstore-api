@@ -8,6 +8,5 @@ cartRoute.get('/getfull', findFinalCart)
 cartRoute.post('/add-to-cart', addToCart)
 cartRoute.patch('/edit', editCart)
 cartRoute.patch('/remove', removeItem)
-cartRoute.patch('/checkout', createOrder)
 
 module.exports = cartRoute

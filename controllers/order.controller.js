@@ -114,11 +114,9 @@ const deleteCart = async (req, res) => {
   const { username } = decodeToken(req.headers.authorization)
   const payload = req.body
   try {
-    const doc = await cart.deleteOne({ "createdBy.name": username })
-    console.log('delete success')
-    // res.json(doc)
+    const doc = await Cart.deleteOne({ "createdBy.name": username })
   } catch (error) {
-    // res.status(404).json({ ...error })
+    res.status(404).json({ errors: error })
   }
 }
 
