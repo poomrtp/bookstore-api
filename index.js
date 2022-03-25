@@ -30,7 +30,6 @@ app.use('/api/orders', orderAPI)
 app.use('/api/user', userAPI)
 
 const PORT = process.env.PORT || 3000;
-console.log('process.env.CONNECTION_URL', process.env.CONNECTION_URL)
 mongoose.connect(process.env.CONNECTION_URL,
   {
     useNewUrlParser: true,
