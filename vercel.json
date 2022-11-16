@@ -3,7 +3,7 @@
   "env": {},
   "builds": [
     {
-      "src": "src/main.ts",
+      "src": "index.js",
       "use": "@now/node"
     }
   ],
