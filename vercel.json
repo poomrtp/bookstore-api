@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "env": {},
   "builds": [
     {
@@ -9,7 +9,7 @@
   ],
   "routes": [
     {
-      "src": ".*",
+      "src": "/(.*)",
       "dest": "index.js",
       "methods": ["GET", "POST", "PUT", "PATCH", "DELETE"]
     }
